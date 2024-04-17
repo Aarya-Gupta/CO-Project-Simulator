@@ -349,11 +349,9 @@ def main():
         if(opcode == "0010111"):
             rd = currentCommand[20:25]
             immediate = currentCommand[0:20] + (12*"0")
-
             rdNameIndex = list(regDesc.values()).index(rd)
             rdName = list(regDesc.keys())[rdNameIndex]
-
-            regMem[rdName] = DecimalToBinary(programCounter + conv(immediate),32)
+            regMem[rdName] = DecimalToBinary(programCounter-4 + conv(immediate),32)
 
 
         #J Type
@@ -439,7 +437,6 @@ def main():
         if(programCounter in counterList):
             keyValues = list(regMem.keys())
             binPC = DecimalToBinary(programCounter-4, 32)
-            print(conv(binPC))
             regValues = "0b" + binPC + " "
             
             for i in keyValues:
@@ -452,7 +449,6 @@ def main():
 
         keyValues = list(regMem.keys())
         binPC = DecimalToBinary(programCounter, 32)
-        print(conv(binPC))
         regValues = "0b" + binPC + " "
         
         for i in keyValues:
@@ -467,12 +463,10 @@ def main():
     for i in range(len(memoryDict.keys())):
         keyList = list(memoryDict.keys())
         valList = list(memoryDict.values())
-        valueMain = keyList[i] + ":" + valList[i]
+        valueMain = keyList[i] + ":0b" + valList[i]
         memoryList.append(valueMain)
 
 
-    for i in range(len(finalList)):
-        finalList[i] = finalList[i].strip()
     
     f = open(outputFilePath, "w")
     for i in finalList:
