@@ -226,6 +226,9 @@ def main():
         result = ''.join(c)
         return result
 
+    def sext(str):
+        return ((32-len(str))*'0')+str
+    
     while(programCounter <= len(commands)*4):
 
         currentCommand = commands[(programCounter//4)-1].strip()
@@ -242,7 +245,7 @@ def main():
 
             rdNameIndex = list(regDesc.values()).index(rd)
             rdName = list(regDesc.keys())[rdNameIndex]
-
+            
             rs1NameIndex = list(regDesc.values()).index(rs1)
             rs1Name = list(regDesc.keys())[rs1NameIndex]
 
@@ -251,12 +254,12 @@ def main():
 
             #Add
             if(funct3 == "000" and funct7== "0000000"):
-                temp = conv(regMem[rs2Name]) + conv(regMem[rs2Name])
+                temp = conv(sext(regMem[rs1Name])) + conv(sext(regMem[rs2Name]))
                 regMem[rdName] = DecimalToBinary(temp,32)
-            if funct3=="000" and funct7=="0000000" and rs1Name=="x0":
-                temp=conv(regMem[rs2Name])*-1
+            if funct3=="000" and funct7=="0100000" and rs1Name=="x0":
+                temp=conv(regMem[rs2Name])*(-1)
                 regMem[rdName] = DecimalToBinary(temp,32)
-            if funct3=="000" and funct7=="0000000":
+            if funct3=="000" and funct7=="0100000":
                 temp=signedconv(regMem[rs1Name])-signedconv(regMem[rs2Name])
                 regMem[rdName]=DecimalToBinary(temp,32)
             if funct3=="010":
