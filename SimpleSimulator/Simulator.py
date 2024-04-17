@@ -1,42 +1,42 @@
 from SystemDesc import *
 
 memoryDict = {
-    "0x00010000":0,
-    "0x00010004":0,
-    "0x00010008":0,
-    "0x0001000c":0,
-    "0x00010010":0,
-    "0x00010014":0,
-    "0x00010018":0,
-    "0x0001001c":0,
-    "0x00010020":0,
-    "0x00010024":0,
-    "0x00010028":0,
-    "0x0001002c":0,
-    "0x00010030":0,
-    "0x00010034":0,
-    "0x00010038":0,
-    "0x0001003c":0,
-    "0x00010040":0,
-    "0x00010044":0,
-    "0x00010048":0,
-    "0x0001004c":0,
-    "0x00010050":0,
-    "0x00010054":0,
-    "0x00010058":0,
-    "0x0001005c":0,
-    "0x00010060":0,
-    "0x00010064":0,
-    "0x00010068":0,
-    "0x0001006c":0,
-    "0x00010070":0,
-    "0x00010074":0,
-    "0x00010078":0,
-    "0x0001007c":0,
+    "0x00010000":"00000000000000000000000000000000",
+    "0x00010004":"00000000000000000000000000000000",
+    "0x00010008":"00000000000000000000000000000000",
+    "0x0001000c":"00000000000000000000000000000000",
+    "0x00010010":"00000000000000000000000000000000",
+    "0x00010014":"00000000000000000000000000000000",
+    "0x00010018":"00000000000000000000000000000000",
+    "0x0001001c":"00000000000000000000000000000000",
+    "0x00010020":"00000000000000000000000000000000",
+    "0x00010024":"00000000000000000000000000000000",
+    "0x00010028":"00000000000000000000000000000000",
+    "0x0001002c":"00000000000000000000000000000000",
+    "0x00010030":"00000000000000000000000000000000",
+    "0x00010034":"00000000000000000000000000000000",
+    "0x00010038":"00000000000000000000000000000000",
+    "0x0001003c":"00000000000000000000000000000000",
+    "0x00010040":"00000000000000000000000000000000",
+    "0x00010044":"00000000000000000000000000000000",
+    "0x00010048":"00000000000000000000000000000000",
+    "0x0001004c":"00000000000000000000000000000000",
+    "0x00010050":"00000000000000000000000000000000",
+    "0x00010054":"00000000000000000000000000000000",
+    "0x00010058":"00000000000000000000000000000000",
+    "0x0001005c":"00000000000000000000000000000000",
+    "0x00010060":"00000000000000000000000000000000",
+    "0x00010064":"00000000000000000000000000000000",
+    "0x00010068":"00000000000000000000000000000000",
+    "0x0001006c":"00000000000000000000000000000000",
+    "0x00010070":"00000000000000000000000000000000",
+    "0x00010074":"00000000000000000000000000000000",
+    "0x00010078":"00000000000000000000000000000000",
+    "0x0001007c":"00000000000000000000000000000000",
 }
 
 regMem={ 
-    "zero": "00000000000000000000000000000010", 
+    "zero": "00000000000000000000000000000000", 
     "ra": "00000000000000000000000000000000",
     "sp": "00000000000000000000000000000000",
     "gp": "00000000000000000000000000000000",
@@ -45,7 +45,6 @@ regMem={
     "t1": "00000000000000000000000000000000",
     "t2": "00000000000000000000000000000000",
     "s0": "00000000000000000000000000000000",
-    "fp": "00000000000000000000000000000000",
     "s1": "00000000000000000000000000000000",
     "a0": "00000000000000000000000000000000",
     "a1": "00000000000000000000000000000000",
@@ -81,6 +80,9 @@ def readFile():
     file.close()
 
 commands = []
+programCounter = 4
+finalList = []
+
 readFile()
 
 def DecimalToBinary(num,k):
@@ -159,9 +161,59 @@ def signedconv(s):
     else:
         return (int(str,2))*-1
     
-for i in commands:
+def binary_to_hex(binary_str):
+    hex_str = ''
+    binary_str = binary_str[::-1]
+    padding = 4 - (len(binary_str) % 4)
+    binary_str = '0' * padding + binary_str
+    for i in range(0, len(binary_str), 4):
+        chunk = binary_str[i:i + 4]
+        decimal_value = 0
+        for bit in chunk:
+            decimal_value = decimal_value * 2 + int(bit)
+        if decimal_value < 10:
+            hex_str = str(decimal_value) + hex_str
+        else:
+            hex_str = chr(ord('a') + decimal_value - 10) + hex_str
+    return hex_str
 
-    currentCommand = i.strip()
+def bitwiseOR(a,b):
+    c = []
+    for i in range(0,4):
+        if a[i] == "0" and b[i] == "0":
+            c.append("0")
+        else:
+            c.append("1")
+    result = "".join(c)
+    return result
+
+def bitwiseXOR(a,b):
+    c = []
+    for i in range(0,4):
+        if a[i] == "0" and b[i] == "0":
+            c.append("0")
+        elif a[i] == "1" and b[i] == "1":
+            c.append("0")
+        elif a[i] == "0" and b[i] == "1":
+            c.append("1")
+        else:
+            c.append("1")
+    result = "".join(c)
+    return result
+
+def bitwiseAND(a,b):
+    c = []
+    for i in range(0, 4):
+        if a[i] == '1' and b[i] == '1':
+            c.append('1')
+        else:
+            c.append('0')
+    result = ''.join(c)
+    return result
+
+while(programCounter <= len(commands)*4):
+
+    currentCommand = commands[(programCounter//4)-1].strip()
     opcode = currentCommand[25::]
 
 
@@ -193,8 +245,115 @@ for i in commands:
             temp=signedconv(regMem[rs1Name])-signedconv(regMem[rs2Name])
             regMem[rdName]=DecimalToBinary(temp,32)
         if funct3=="010":
-            if int(regMem[rs1Name],2)<int(regMem[rs2Name],2):
+            if conv(regMem[rs1Name])<conv(regMem[rs2Name]):
                 regMem[rdName]=DecimalToBinary(1,32)
         if funct3 =="011":
             if int(regMem[rs1Name],2)<int(regMem[rs2Name],2):
                 regMem[rdName]=DecimalToBinary(1,32)
+        if funct3 =="100":
+            regMem[rdName] = bitwiseXOR(regMem[rs1Name], regMem[rs2Name])
+        if funct3 =="110":
+            regMem[rdName] = bitwiseOR(regMem[rs1Name], regMem[rs2Name])
+        if funct3 =="111":
+            regMem[rdName] = bitwiseAND(regMem[rs1Name], regMem[rs2Name])
+        
+
+
+
+
+    #I Type
+    if(opcode == "0000011" or opcode == "0010011" or opcode == "1100111"):
+        rd = currentCommand[20:25]
+        funct3 = currentCommand[17:20]
+        rs1 = currentCommand[12:17]
+        immediate = currentCommand[0:12]
+
+        rdNameIndex = list(regDesc.values()).index(rd)
+        rdName = list(regDesc.keys())[rdNameIndex]
+
+        rs1NameIndex = list(regDesc.values()).index(rs1)
+        rs1Name = list(regDesc.keys())[rs1NameIndex]
+
+        #lw
+        if(funct3 == "010"):
+            if(immediate[0] == "0"):
+                regMem[rdName] = memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + immediate)]
+            else:
+                immediate2 = findTwoscomplement(immediate)
+                regMem[rdName] = memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + immediate2)]
+        #addi
+        if(opcode == "0010011" and funct3 == "000"):
+            if(immediate[0] == "0"):
+                regMem[rdName] = regMem[rs1Name] + immediate
+            else:
+                immediate2 = findTwoscomplement(immediate)
+                regMem[rdName] = regMem[rs1Name] + immediate2
+        
+        #sltiu
+        if(funct3 == "011"):
+            if(int(regMem[rs1Name],2) < int(immediate,2)):
+                regMem[rdName] = DecimalToBinary(1,32)
+
+        #jalr
+        if(opcode == "1100111"):
+            regMem[rdName] = DecimalToBinary(programCounter+4,32)
+
+            binPC = DecimalToBinary(programCounter,32)
+            binPC = binPC[0:31] + "0"
+            programCounter = conv(binPC)
+
+            if(immediate[0] == "0"):
+                programCounter = conv(regMem[rs1Name] + immediate)
+            else:
+                immediate2 = findTwoscomplement(immediate)
+                programCounter = conv(regMem[rs1Name] + immediate2)
+
+    #S Type
+    if(opcode == "0100011"):
+        immediate1 = currentCommand[20:25]
+        funct3 = currentCommand[17:20]
+        rs1 = currentCommand[12:17]
+        rs2 = currentCommand[7:12]
+        immediate2 = currentCommand[0:7]
+
+        relImmediate = currentCommand[20::]
+
+        rs1NameIndex = list(regDesc.values()).index(rs1)
+        rs1Name = list(regDesc.keys())[rs1NameIndex]
+
+        rs2NameIndex = list(regDesc.values()).index(rs2)
+        rs2Name = list(regDesc.keys())[rs2NameIndex]
+
+
+        if(relImmediate[0] == "0"):
+            memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + relImmediate)] = regMem[rs2Name]
+        else:
+            relImmediate2 = findTwoscomplement(relImmediate)
+            memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + relImmediate2)] = regMem[rs2Name]
+
+
+
+
+
+    programCounter += 4
+            
+           
+
+
+
+
+
+    keyValues = regMem.keys()
+    binPC = DecimalToBinary(programCounter, 32)
+    regValues = "0b" + binPC + " "
+    
+    for i in keyValues:
+        regValues = regValues + "0b" + regMem[i] + " "
+    
+    finalList.append(regValues)
+
+
+for i in range(len(finalList)):
+    finalList[i] = finalList[i].strip()
+
+print(finalList)
