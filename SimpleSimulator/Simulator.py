@@ -280,18 +280,12 @@ while(programCounter <= len(commands)*4):
 
         #lw
         if(funct3 == "010"):
-            if(immediate[0] == "0"):
-                regMem[rdName] = memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + immediate)]
-            else:
-                immediate2 = findTwoscomplement(immediate)
-                regMem[rdName] = memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + immediate2)]
+            newVal = DecimalToBinary(conv(regMem[rs1Name]) + conv(immediate),32)
+            regMem[rdName] = memoryDict["0x" + binary_to_hex(newVal)]
+
         #addi
         if(opcode == "0010011" and funct3 == "000"):
-            if(immediate[0] == "0"):
-                regMem[rdName] = regMem[rs1Name] + immediate
-            else:
-                immediate2 = findTwoscomplement(immediate)
-                regMem[rdName] = regMem[rs1Name] + immediate2
+            regMem[rdName] = DecimalToBinary(conv(regMem[rs1Name]) + conv(immediate),32)
         
         #sltiu
         if(funct3 == "011"):
@@ -305,12 +299,8 @@ while(programCounter <= len(commands)*4):
             binPC = DecimalToBinary(programCounter,32)
             binPC = binPC[0:31] + "0"
             programCounter = conv(binPC)
-
-            if(immediate[0] == "0"):
-                programCounter = conv(regMem[rs1Name] + immediate)
-            else:
-                immediate2 = findTwoscomplement(immediate)
-                programCounter = conv(regMem[rs1Name] + immediate2)
+            
+            programCounter = conv(regMem[rs1Name]) + conv(immediate)
 
     #S Type
     if(opcode == "0100011"):
@@ -328,12 +318,47 @@ while(programCounter <= len(commands)*4):
         rs2NameIndex = list(regDesc.values()).index(rs2)
         rs2Name = list(regDesc.keys())[rs2NameIndex]
 
+        memoryDict["0x" + binary_to_hex(DecimalToBinary(conv(regMem[rs1Name]) + conv(relImmediate),32))] = regMem[rs2Name]
 
-        if(relImmediate[0] == "0"):
-            memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + relImmediate)] = regMem[rs2Name]
-        else:
-            relImmediate2 = findTwoscomplement(relImmediate)
-            memoryDict["0x000" + binary_to_hex(regMem[rs1Name] + relImmediate2)] = regMem[rs2Name]
+    
+    #U Type lui
+    if(opcode == "0110111"):
+        rd = currentCommand[20:25]
+        immediate = currentCommand[0:20] + (12*"0")
+
+        rdNameIndex = list(regDesc.values()).index(rd)
+        rdName = list(regDesc.keys())[rdNameIndex]
+
+        regMem[rdName] = DecimalToBinary(conv(immediate),32)
+
+    #U Type auipc
+    if(opcode == "0010111"):
+        rd = currentCommand[20:25]
+        immediate = currentCommand[0:20] + (12*"0")
+
+        rdNameIndex = list(regDesc.values()).index(rd)
+        rdName = list(regDesc.keys())[rdNameIndex]
+
+        regMem[rdName] = DecimalToBinary(programCounter + conv(immediate),32)
+
+
+    #J Type
+    if(opcode == "1101111"):
+        rd = currentCommand[20:25]
+        immediate = currentCommand[0:20]
+
+        rdNameIndex = list(regDesc.values()).index(rd)
+        rdName = list(regDesc.keys())[rdNameIndex]
+
+        regMem[rdName] = DecimalToBinary(programCounter + 4,32)
+
+        binPC = DecimalToBinary(programCounter,32)
+        binPC = binPC[0:31] + "0"
+        programCounter = conv(binPC)
+
+        programCounter = programCounter # + 
+
+
 
 
 
