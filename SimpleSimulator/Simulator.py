@@ -238,10 +238,10 @@ while(programCounter <= len(commands)*4):
         if(funct3 == "000" and funct7== "0000000"):
             temp = conv(regMem[rs2Name]) + conv(regMem[rs2Name])
             regMem[rdName] = DecimalToBinary(temp,32)
-        if funct3=="000" and funct7=="0000000":
+        if funct3=="000" and funct7=="0000000" and rs1Name=="x0":
             temp=conv(regMem[rs2Name])*-1
             regMem[rdName] = DecimalToBinary(temp,32)
-        if funct3=="001":
+        if funct3=="000" and funct7=="0000000":
             temp=signedconv(regMem[rs1Name])-signedconv(regMem[rs2Name])
             regMem[rdName]=DecimalToBinary(temp,32)
         if funct3=="010":
@@ -256,6 +256,10 @@ while(programCounter <= len(commands)*4):
             regMem[rdName] = bitwiseOR(regMem[rs1Name], regMem[rs2Name])
         if funct3 =="111":
             regMem[rdName] = bitwiseAND(regMem[rs1Name], regMem[rs2Name])
+        if funct3=="001":
+            regMem[rdName]=regMem[rs1Name]<<regMem[rs2Name]
+        if funct3=="101":
+            regMem[rdName]=regMem[rs1Name]>>regMem[rs2Name]
         
 
 
