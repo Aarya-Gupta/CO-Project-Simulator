@@ -137,17 +137,16 @@ def main():
             else:
                 return "FLAG"
             
-    def findTwoscomplement(str):
-        n=len(str)
-        i=n-1
-        while(i>=0):
-            if(str[i]=='1'):
+    def twoscomp(str):
+        n = len(str)
+        i = n - 1
+        while(i >= 0):
+            if (str[i] == '1'):
                 break
-    
-            i-=1
-        if i==-1:
+            i -= 1
+        if (i == -1):
             return '1'+str
-        k=i-1
+        k = i - 1
         while(k >= 0):
             if (str[k] == '1'):
                 str = list(str)
@@ -157,7 +156,6 @@ def main():
                 str = list(str)
                 str[k] = '1'
                 str = ''.join(str)
-    
             k -= 1
         return str
 
@@ -190,7 +188,7 @@ def main():
                 hex_str = str(decimal_value) + hex_str
             else:
                 hex_str = chr(ord('a') + decimal_value - 10) + hex_str
-        return hex_str
+        return hex_str[::-1]
 
     def bitwiseOR(a,b):
         c = []
