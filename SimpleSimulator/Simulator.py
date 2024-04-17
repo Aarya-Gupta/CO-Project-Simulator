@@ -53,7 +53,7 @@ def main():
     regMem={ 
         "zero": "00000000000000000000000000000000", 
         "ra": "00000000000000000000000000000000",
-        "sp": "00000000000000000000000000000000",
+        "sp": "00000000000000000000000100000000",
         "gp": "00000000000000000000000000000000",
         "tp": "00000000000000000000000000000000",
         "t0": "00000000000000000000000000000000",
@@ -97,6 +97,7 @@ def main():
     commands = []
     programCounter = 4
     finalList = []
+    counterList = []
 
     readFile()
 
@@ -192,7 +193,7 @@ def main():
 
     def bitwiseOR(a,b):
         c = []
-        for i in range(0,4):
+        for i in range(len(a)):
             if a[i] == "0" and b[i] == "0":
                 c.append("0")
             else:
@@ -202,7 +203,7 @@ def main():
 
     def bitwiseXOR(a,b):
         c = []
-        for i in range(0,4):
+        for i in range(len(a)):
             if a[i] == "0" and b[i] == "0":
                 c.append("0")
             elif a[i] == "1" and b[i] == "1":
@@ -216,7 +217,7 @@ def main():
 
     def bitwiseAND(a,b):
         c = []
-        for i in range(0, 4):
+        for i in range(len(a)):
             if a[i] == '1' and b[i] == '1':
                 c.append('1')
             else:
@@ -396,10 +397,15 @@ def main():
             rs2Name = list(regDesc.keys())[rs2NameIndex]
 
 
-            #bew
+            #beq
             if(funct3 == "000"):
+                
                 newval = programCounter + conv(immediate)
+                
                 if(conv(regMem[rs1Name]) == conv(regMem[rs2Name])):
+                    if(programCounter==newval):
+                        counterList.append(newval)
+                        
                     programCounter = newval
             #bne
             if(funct3 == "001"):
@@ -434,22 +440,37 @@ def main():
 
 
 
-        programCounter += 4
+        
                 
             
 
 
+        if(programCounter in counterList):
+            keyValues = list(regMem.keys())
+            binPC = DecimalToBinary(programCounter-4, 32)
+            print(conv(binPC))
+            regValues = "0b" + binPC + " "
+            
+            for i in keyValues:
+                regValues = regValues + "0b" + regMem[i] + " "
 
-
+            
+            finalList.append(regValues)
+            counterList.append(programCounter)
+            break
 
         keyValues = list(regMem.keys())
         binPC = DecimalToBinary(programCounter, 32)
+        print(conv(binPC))
         regValues = "0b" + binPC + " "
         
         for i in keyValues:
             regValues = regValues + "0b" + regMem[i] + " "
+
         
         finalList.append(regValues)
+        counterList.append(programCounter)
+        programCounter += 4
 
     memoryList = []
     for i in range(len(memoryDict.keys())):
