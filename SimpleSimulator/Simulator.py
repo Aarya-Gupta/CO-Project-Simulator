@@ -100,6 +100,11 @@ def main():
 
     readFile()
 
+    def binary_to_hex(binary_str):
+        s=hex(int(binary_str,2))
+        s="000"+s[2::]
+        return s
+        
     def DecimalToBinary(num,k):
             n=num
             if num<0:
@@ -136,7 +141,7 @@ def main():
             
             else:
                 return "FLAG"
-            
+
     def findTwoscomplement(str):
         n = len(str)
         i = n - 1
@@ -165,7 +170,7 @@ def main():
             return (int(s,2)*-1)
         else:
             return (int(s,2))
-            
+                
 
     def signedconv(s):
         str=s[1::]
@@ -174,21 +179,7 @@ def main():
         else:
             return (int(str,2))*-1
         
-    def binary_to_hex(binary_str):
-        hex_str = ''
-        binary_str = binary_str[::-1]
-        padding = 4 - (len(binary_str) % 4)
-        binary_str = '0' * padding + binary_str
-        for i in range(0, len(binary_str), 4):
-            chunk = binary_str[i:i + 4]
-            decimal_value = 0
-            for bit in chunk:
-                decimal_value = decimal_value * 2 + int(bit)
-            if decimal_value < 10:
-                hex_str = str(decimal_value) + hex_str
-            else:
-                hex_str = chr(ord('a') + decimal_value - 10) + hex_str
-        return hex_str[::-1]
+
 
     def bitwiseOR(a,b):
         c = []
