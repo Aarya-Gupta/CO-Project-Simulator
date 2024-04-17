@@ -36,39 +36,39 @@ memoryDict = {
 }
 
 regMem={ 
-    "zero": 2, 
-    "ra": 0,
-    "sp": 0,
-    "gp": 0,
-    "tp": 0,
-    "t0": 0,
-    "t1": 0,
-    "t2": 0,
-    "s0": 0,
-    "fp": 0,
-    "s1": 0,
-    "a0": 0,
-    "a1": 0,
-    "a2": 0,
-    "a3": 0,
-    "a4": 0,
-    "a5": 0,
-    "a6": 0,
-    "a7": 0,
-    "s2": 0,
-    "s3": 0,
-    "s4": 0,
-    "s5": 0,
-    "s6": 0,
-    "s7": 0,
-    "s8": 0,
-    "s9": 0,
-    "s10": 0,
-    "s11": 0,
-    "t3": 0,
-    "t4": 0,
-    "t5": 0,
-    "t6": 0,
+    "zero": "00000000000000000000000000000010", 
+    "ra": "00000000000000000000000000000000",
+    "sp": "00000000000000000000000000000000",
+    "gp": "00000000000000000000000000000000",
+    "tp": "00000000000000000000000000000000",
+    "t0": "00000000000000000000000000000000",
+    "t1": "00000000000000000000000000000000",
+    "t2": "00000000000000000000000000000000",
+    "s0": "00000000000000000000000000000000",
+    "fp": "00000000000000000000000000000000",
+    "s1": "00000000000000000000000000000000",
+    "a0": "00000000000000000000000000000000",
+    "a1": "00000000000000000000000000000000",
+    "a2": "00000000000000000000000000000000",
+    "a3": "00000000000000000000000000000000",
+    "a4": "00000000000000000000000000000000",
+    "a5": "00000000000000000000000000000000",
+    "a6": "00000000000000000000000000000000",
+    "a7": "00000000000000000000000000000000",
+    "s2": "00000000000000000000000000000000",
+    "s3": "00000000000000000000000000000000",
+    "s4": "00000000000000000000000000000000",
+    "s5": "00000000000000000000000000000000",
+    "s6": "00000000000000000000000000000000",
+    "s7": "00000000000000000000000000000000",
+    "s8": "00000000000000000000000000000000",
+    "s9": "00000000000000000000000000000000",
+    "s10": "00000000000000000000000000000000",
+    "s11": "00000000000000000000000000000000",
+    "t3": "00000000000000000000000000000000",
+    "t4": "00000000000000000000000000000000",
+    "t5": "00000000000000000000000000000000",
+    "t6":"00000000000000000000000000000000",
 }
 
 def readFile():
@@ -83,6 +83,82 @@ def readFile():
 commands = []
 readFile()
 
+def DecimalToBinary(num,k):
+        n=num
+        if num<0:
+            n=num*(-1)
+        s=""
+        while n>=1:
+            s+=str(n%2)
+            n=n//2
+        s=s[::-1]
+        l=len(s)
+        if l<=k:
+            str1="0"*(k-l)
+            s=str1+s
+            l= k
+
+            str2=""
+            if num<0:
+                for i in range(l):
+                    if s[i]=="0":
+                        str2+="1"
+                    else:
+                        str2+="0"
+                temp=list(str2)
+                for i in range(len(temp)-1,-1,-1):
+                    if str2[i]=="1":
+                        temp[i]="0"
+                    else:
+                        temp[i]="1"
+                        break
+                s=""
+                for i in temp:
+                    s+=i
+            return s 
+        
+        else:
+            return "FLAG"
+        
+def findTwoscomplement(str):
+    n=len(str)
+    i=n-1
+    while(i>=0):
+        if(str[i]=='1'):
+            break
+ 
+        i-=1
+    if i==-1:
+        return '1'+str
+    k=i-1
+    while(k >= 0):
+        if (str[k] == '1'):
+            str = list(str)
+            str[k] = '0'
+            str = ''.join(str)
+        else:
+            str = list(str)
+            str[k] = '1'
+            str = ''.join(str)
+ 
+        k -= 1
+    return str
+
+def conv(s):
+    if s[0]=="1":
+        s=findTwoscomplement(s)
+        return (int(s,2)*-1)
+    else:
+        return (int(s,2))
+        
+
+def signedconv(s):
+    str=s[1::]
+    if s[0]=='0':
+        return int(str,2)
+    else:
+        return (int(str,2))*-1
+    
 for i in commands:
 
     currentCommand = i.strip()
@@ -95,6 +171,7 @@ for i in commands:
         funct3 = currentCommand[17:20]
         rs1 = currentCommand[12:17]
         rs2 = currentCommand[7:12]
+        funct7=currentCommand[0:7]
 
         rdNameIndex = list(regDesc.values()).index(rd)
         rdName = list(regDesc.keys())[rdNameIndex]
@@ -106,11 +183,18 @@ for i in commands:
         rs2Name = list(regDesc.keys())[rs2NameIndex]
 
         #Add
-        if(funct3 == "000"):
-            regMem[rdName] = regMem[rs1Name] + regMem[rs2Name]
-            print(regMem[rdName])
-
-        
-
-
-
+        if(funct3 == "000" and funct7== "0000000"):
+            temp = conv(regMem[rs2Name]) + conv(regMem[rs2Name])
+            regMem[rdName] = DecimalToBinary(temp,32)
+        if funct3=="000" and funct7=="0000000":
+            temp=conv(regMem[rs2Name])*-1
+            regMem[rdName] = DecimalToBinary(temp,32)
+        if funct3=="001":
+            temp=signedconv(regMem[rs1Name])-signedconv(regMem[rs2Name])
+            regMem[rdName]=DecimalToBinary(temp,32)
+        if funct3=="010":
+            if int(regMem[rs1Name],2)<int(regMem[rs2Name],2):
+                regMem[rdName]=DecimalToBinary(1,32)
+        if funct3 =="011":
+            if int(regMem[rs1Name],2)<int(regMem[rs2Name],2):
+                regMem[rdName]=DecimalToBinary(1,32)
