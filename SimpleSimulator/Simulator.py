@@ -137,7 +137,7 @@ def main():
             else:
                 return "FLAG"
             
-    def twoscomp(str):
+    def findTwoscomplement(str):
         n = len(str)
         i = n - 1
         while(i >= 0):
