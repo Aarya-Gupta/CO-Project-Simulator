@@ -422,6 +422,44 @@ def main():
                 newval = programCounter + conv(immediate)
                 if(int(regMem[rs1Name],2) < int(regMem[rs2Name],2)):
                     programCounter = newval
+        if opcode=="1000001":
+            rs2=currentCommand[7:12]
+            rs1=currentCommand[12:17]
+            rd=currentCommand[20:25]
+
+            rdNameIndex = list(regDesc.values()).index(rd)
+            rdName = list(regDesc.keys())[rdNameIndex]
+            
+            rs1NameIndex = list(regDesc.values()).index(rs1)
+            rs1Name = list(regDesc.keys())[rs1NameIndex]
+            
+            rs2NameIndex = list(regDesc.values()).index(rs2)
+            rs2Name = list(regDesc.keys())[rs2NameIndex]
+            
+            temp=conv(regMem[rs1Name])*conv(regMem[rs2Name])
+            regMem[rdName]=DecimalToBinary(temp,32)
+        
+        if opcode=="1000010":
+            for i in regMem.keys():
+                regMem[i]="0"*32
+        
+        if opcode=="1000011":
+            break
+        
+        if opcode=="1000100":
+            rs1=currentCommand[12:17]
+            rd=currentCommand[20:25]
+            
+            rdNameIndex = list(regDesc.values()).index(rd)
+            rdName = list(regDesc.keys())[rdNameIndex]
+            
+            rs1NameIndex = list(regDesc.values()).index(rs1)
+            rs1Name = list(regDesc.keys())[rs1NameIndex]
+            
+            temp=regMem[rs1Name][::-1]
+            regMem[rdName]=temp
+        
+            
 
 
 
